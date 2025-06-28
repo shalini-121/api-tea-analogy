@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APIs Explained with a Cup of Tea ☕</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: auto; /* Allow scrolling for multiple slides */
+        }
+        .slide-container {
+            width: 100%;
+            max-width: 900px; /* Standard presentation slide width */
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
+            background-color: white;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 500px; /* Minimum height for a slide */
+            position: relative;
+            animation: fadeIn 0.8s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-number {
+            position: absolute;
+            bottom: 1rem;
+            right: 1.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        /* Specific styling for cover slide */
+        .cover-slide h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: #334155;
+        }
+        .cover-slide p {
+            font-size: 1.5rem;
+            color: #4a5568;
+            margin-bottom: 2rem;
+        }
+        .cover-slide .author {
+            font-size: 1.25rem;
+            color: #6b7280;
+        }
+        /* General content slide styling */
+        .content-slide h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #334155;
+        }
+        .content-slide p {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+        .content-slide ul {
+            list-style: none;
+            padding: 0;
+            font-size: 1.2rem;
+            text-align: left;
+            margin-top: 1rem;
+            color: #4a5568;
+        }
+        .content-slide ul li {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .content-slide ul li::before {
+            content: '✅'; /* Or any other bullet icon */
+            position: absolute;
+            left: 0;
+            color: #38a169; /* Green checkmark */
+            font-size: 1rem;
+            top: 0.2rem;
+        }
+        .highlight {
+            font-weight: 600;
+            color: #1a202c; /* Darker text for emphasis */
+        }
+        .icon-large {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .emoji {
+            font-size: 2.5rem;
+            margin-top: 1rem;
+        }
+
+        /* Custom Animations */
+        /* Animation for bouncing effect on icons/emojis */
+        @keyframes bounce-once {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            20% {
+                transform: translateY(-8px);
+            }
+            40% {
+                transform: translateY(0);
+            }
+            60% {
+                transform: translateY(-4px);
+            }
+            80% {
+                transform: translateY(0);
+            }
+        }
+        .animate-bounce-once {
+            animation: bounce-once 1.2s ease-out;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .slide-container {
+                padding: 1.5rem;
+                border-radius: 0.75rem;
+                min-height: 400px;
+            }
+            .cover-slide h1 {
+                font-size: 2rem;
+            }
+            .cover-slide p {
+                font-size: 1.2rem;
+            }
+            .cover-slide .author {
+                font-size: 1rem;
+            }
+            .content-slide h2 {
+                font-size: 2rem;
+            }
+            .content-slide p {
+                font-size: 1rem;
+            }
+            .content-slide ul {
+                font-size: 1rem;
+            }
+            .icon-large {
+                font-size: 3rem;
+            }
+            .emoji {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slide-container {
+                padding: 1rem;
+                min-height: 350px;
+            }
+            .cover-slide h1 {
+                font-size: 1.5rem;
+            }
+            .cover-slide p {
+                font-size: 1rem;
+            }
+            .cover-slide .author {
+                font-size: 0.9rem;
+            }
+            .content-slide h2 {
+                font-size: 1.5rem;
+            }
+            .content-slide p {
+                font-size: 0.9rem;
+            }
+            .content-slide ul {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Modal specific styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease-in-out;
+            position: relative;
+        }
+        .modal.open .modal-content {
+            transform: translateY(0);
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 0.75rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center p-4">
+
+    <!-- Slide 1: Cover Slide -->
+    <div class="slide-container cover-slide flex flex-col justify-center items-center text-center bg-gradient-to-br from-indigo-50 to-purple-50">
+        <h1 class="text-gray-900 font-extrabold mb-4 animate-pulse">
+            APIs Explained with a Cup of Tea <span class="animate-bounce-once inline-block">☕</span>
+        </h1>
+        <p class="text-gray-700 leading-relaxed max-w-xl">
+            A Beginner-Friendly Analogy You’ll Never Forget
+        </p>
+        <div class="author mt-8">
+            <span class="text-purple-600 animate-bounce-once inline-block">👩‍💻</span> <span class="font-semibold text-gray-800">By Shalini Chegireddy</span>
+        </div>
+        <span class="slide-number">🔢 Slide 1</span>
+    </div>
+
+    <!-- Slide 2: What is an API? -->
+    <div class="slide-container content-slide">
+        <h2 class="text-blue-700">What is an API?</h2>
+        <p class="text-lg mb-4">Ever wondered what an API is?</p>
+        <p class="text-xl font-medium mb-8">Let’s ditch the jargon...</p>
+        <p class="text-2xl font-bold text-green-600">And explain it using something we all love: Tea. <span class="animate-bounce-once inline-block">🍵</span></p>
+        <span class="slide-number">🔢 Slide 2</span>
+    </div>
+
+    <!-- Slide 3: You — The Customer -->
+    <div class="slide-container content-slide">
+        <h2 class="text-blue-700">You — The Customer</h2>
+        <p class="text-xl">You walk into a tea stall.</p>
+        <p class="text-xl">You’re thirsty. You want ginger tea.</p>
+        <p class="text-xl font-medium mt-4">But you don’t go into the kitchen —</p>
+        <p class="text-xl font-medium">you ask someone for it.</p>
+        <div class="mt-6 text-xl font-semibold text-purple-700">
+            <span class="animate-bounce-once inline-block">👤</span> You = <span class="highlight">The Client</span>
+        </div>
+        <span class="slide-number">🔢 Slide 3</span>
+    </div>
+
+    <!-- Slide 4: The Menu = API Documentation -->
+    <div class="slide-container content-slide">
+        <h2 class="text-blue-700">The Menu = API Documentation</h2>
+        <p class="text-xl mb-4">The stall has a menu.</p>
+        <p class="text-xl font-medium">It lists all available items:</p>
+        <ul class="text-left mx-auto max-w-sm mt-4 text-gray-700">
+            <li>Ginger Tea</li>
+            <li>Masala Chai</li>
+            <li>Lemon Tea</li>
+        </ul>
+        <p class="text-xl font-medium mt-6">This is like <span class="highlight">API documentation</span> —</p>
+        <p class="text-xl font-medium">it tells you what you can ask for!</p>
+        <span class="slide-number">🔢 Slide 4</span>
+    </div>
+
+    <!-- Slide 5: The Chaiwala = API -->
+    <div class="slide-container content-slide">
+        <h2 class="text-blue-700">The Chaiwala = API</h2>
+        <p class="text-xl mb-4">You place your order.</p>
+        <p class="text-xl">The chaiwala gives it to the kitchen,</p>
+        <p class="text-xl">waits for the tea, and gives it back to you.</p>
+        <p class="text-2xl font-bold text-green-600 mt-6">
+            He is the <span class="highlight">API</span> — the middleman between<br>
+            you (client) and the kitchen (server).
+        </p>
+        <span class="slide-number">🔢 Slide 5</span>
+    </div>
+
+    <!-- Slide 6: Request and Response -->
+    <div class="slide-container content-slide">
+        <h2 class="text-blue-700">Request and Response</h2>
+        <p class="text-xl mb-2">You send a request (tea order) <span class="animate-bounce-once inline-block">📤</span></p>
+        <p class="text-xl mb-4">You get a response (ginger tea) <span class="animate-bounce-once inline-block">📥</span></p>
+        <p class="text-xl font-medium mt-6">Just like an API:</p>
+        <div class="bg-gray-100 p-4 rounded-lg mt-4 max-w-sm w-full mx-auto text-left">
+            <code class="block text-purple-700 font-mono text-lg mb-2">📤 GET /tea?type=ginger</code>
+            <code class="block text-green-700 font-mono text-lg">📥 Response: { "tea": "ginger" }</code>
+        </div>
+        <span class="slide-number">🔢 Slide 6</span>
+    </div>
+
+    <!-- Slide 7: What You Can’t Do -->
+    <div class="slide-container content-slide">
+        <h2 class="text-blue-700">What You Can’t Do</h2>
+        <p class="text-xl mb-2">You can’t enter the kitchen.</p>
+        <p class="text-xl mb-2">You don’t need to know how the tea is made.</p>
+        <p class="text-xl font-medium mt-4">You just get what’s on the menu.</p>
+        <p class="text-2xl font-bold text-green-600 mt-6">
+            Just like an API —<br>
+            you don’t need the backend logic!
+        </p>
+        <span class="slide-number">🔢 Slide 7</span>
+    </div>
+
+    <!-- Slide 8: In Real Tech Terms -->
+    <div class="slide-container content-slide">
+        <h2 class="text-blue-700">In Real Tech Terms</h2>
+        <p class="text-xl mb-4">Let’s translate the tea example:</p>
+        <ul class="text-left mx-auto max-w-sm mt-4 text-gray-700">
+            <li>You = <span class="highlight">Client</span> (User or App) <span class="animate-bounce-once inline-block">📲</span></li>
+            <li>Chaiwala = <span class="highlight">API</span></li>
+            <li>Kitchen = <span class="highlight">Server</span> <span class="animate-bounce-once inline-block">🖥️</span></li>
+        </ul>
+        <p class="text-xl font-medium mt-6">
+            <span class="animate-bounce-once inline-block">📲</span> You send a request,<br>
+            the API handles it, and<br>
+            you get a response.
+        </p>
+        <span class="slide-number">🔢 Slide 8</span>
+    </div>
+
+    <!-- Slide 9: Why APIs Matter -->
+    <div class="slide-container content-slide">
+        <h2 class="text-blue-700">Why APIs Matter</h2>
+        <ul class="text-left mx-auto max-w-sm mt-4 text-gray-700">
+            <li><span class="animate-bounce-once inline-block">✅</span> Save time</li>
+            <li><span class="animate-bounce-once inline-block">✅</span> Connect different apps</li>
+            <li><span class="animate-bounce-once inline-block">✅</span> Reuse functionality</li>
+        </ul>
+        <p class="text-2xl font-bold text-green-600 mt-8">
+            It’s like getting tea<br>
+            without making it yourself! <span class="animate-bounce-once inline-block">😄</span>
+        </p>
+        <span class="slide-number">🔢 Slide 9</span>
+    </div>
+
+    <!-- Slide 10: Final Slide – CTA -->
+    <div class="slide-container content-slide bg-gradient-to-br from-blue-50 to-green-50">
+        <h2 class="text-gray-900 mb-4">Final Slide – CTA</h2>
+        <p class="text-xl mb-4">Next time you sip your chai… <span class="animate-bounce-once inline-block">☕</span></p>
+        <p class="text-2xl font-bold text-indigo-700">Remember:</p>
+        <p class="text-3xl font-extrabold text-indigo-800 mt-4 leading-tight">
+            APIs are the chaiwalas of tech!
+        </p>
+        <p class="text-xl font-medium mt-6">
+            They serve what you ask for —<br>
+            quickly, simply, and reliably.
+        </p>
+        <span class="slide-number">🔢 Slide 10</span>
+    </div>
+
+    <!-- Explain Tech Term Button (Fixed Position) -->
+    <button id="openExplainModalBtn" class="fixed bottom-4 right-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75">
+        ✨ Explain Tech Term
+    </button>
+
+    <!-- Explain Tech Term Modal -->
+    <div id="explainModal" class="modal">
+        <div class="modal-content">
+            <button id="closeExplainModalBtn" class="modal-close-btn">&times;</button>
+            <h3 class="text-2xl font-semibold mb-4 text-gray-800">Explain a Tech Term</h3>
+            <input type="text" id="techTermInput" placeholder="e.g., 'API', 'JSON', 'Frontend'" class="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <button id="getExplanationBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">
+                Get Explanation
+            </button>
+            <div id="explanationOutput" class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-md text-left text-gray-700 max-h-60 overflow-y-auto">
+                <!-- Explanation will appear here -->
+                <p class="text-center text-gray-500">Type a term and click 'Get Explanation'</p>
+            </div>
+            <div id="loadingIndicator" class="mt-4 text-center text-blue-500 hidden">
+                Loading...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const openModalBtn = document.getElementById('openExplainModalBtn');
+            const closeModalBtn = document.getElementById('closeExplainModalBtn');
+            const explainModal = document.getElementById('explainModal');
+            const techTermInput = document.getElementById('techTermInput');
+            const getExplanationBtn = document.getElementById('getExplanationBtn');
+            const explanationOutput = document.getElementById('explanationOutput');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+
+            // Function to open the modal
+            openModalBtn.addEventListener('click', () => {
+                explainModal.classList.add('open');
+                techTermInput.value = ''; // Clear previous input
+                explanationOutput.innerHTML = '<p class="text-center text-gray-500">Type a term and click \'Get Explanation\'</p>'; // Reset output
+                loadingIndicator.classList.add('hidden');
+            });
+
+            // Function to close the modal
+            closeModalBtn.addEventListener('click', () => {
+                explainModal.classList.remove('open');
+            });
+
+            // Close modal if clicked outside modal content
+            explainModal.addEventListener('click', (e) => {
+                if (e.target === explainModal) {
+                    explainModal.classList.remove('open');
+                }
+            });
+
+            // Gemini API Integration
+            getExplanationBtn.addEventListener('click', async () => {
+                const term = techTermInput.value.trim();
+                if (!term) {
+                    explanationOutput.innerHTML = '<p class="text-red-500">Please enter a term to explain.</p>';
+                    return;
+                }
+
+                explanationOutput.innerHTML = ''; // Clear previous explanation
+                loadingIndicator.classList.remove('hidden'); // Show loading indicator
+
+                try {
+                    const prompt = `Explain the tech term "${term}" concisely, like you're explaining it to a beginner, in about 2-3 sentences.`;
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // Canvas will provide this at runtime
+
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`API error: ${response.status} - ${errorData.error.message || 'Unknown error'}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        explanationOutput.innerHTML = `<p>${text}</p>`;
+                    } else {
+                        explanationOutput.innerHTML = '<p class="text-red-500">Could not get an explanation. Please try again.</p>';
+                    }
+                } catch (error) {
+                    console.error('Error calling Gemini API:', error);
+                    explanationOutput.innerHTML = `<p class="text-red-500">Error: ${error.message}. Please try again.</p>`;
+                } finally {
+                    loadingIndicator.classList.add('hidden'); // Hide loading indicator
+                }
+            });
+        });
+    </script>
+</body>
+</html>
